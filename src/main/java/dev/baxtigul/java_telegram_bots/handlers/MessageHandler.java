@@ -1,5 +1,6 @@
 package dev.baxtigul.java_telegram_bots.handlers;
 
+import com.github.javafaker.domain.Field;
 import com.github.javafaker.service.FakerApplicationGenerateRequest;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Message;
@@ -22,7 +23,7 @@ public class MessageHandler implements Handler {
     private final TelegramBot bot = TelegramBotConfiguration.get();
 
     @Override
-    public void handle(Update update, FakerApplicationGenerateRequest fakerApplicationGenerateRequest) {
+    public void handle(Update update, FakerApplicationGenerateRequest fakerApplicationGenerateRequest, Field field) {
         Message message = update.message();
         Long chatID = message.chat().id();
         State state = userState.get(chatID);
@@ -34,9 +35,9 @@ public class MessageHandler implements Handler {
         if (state == null) {
             startRegister(message, languageCode);
         } else if (state instanceof DefaultState defaultState)
-            defaultMessageProcessor.get().process(update, defaultState,fakerApplicationGenerateRequest);
+            defaultMessageProcessor.get().process(update, defaultState,fakerApplicationGenerateRequest,field);
         else if (state instanceof GenerateDataState generateDataState)
-            generateDataMessageProcessor.get().process(update, generateDataState,fakerApplicationGenerateRequest);
+            generateDataMessageProcessor.get().process(update, generateDataState,fakerApplicationGenerateRequest,field);
     }
 
     private void startRegister(@NonNull Message message, String languageCode) {

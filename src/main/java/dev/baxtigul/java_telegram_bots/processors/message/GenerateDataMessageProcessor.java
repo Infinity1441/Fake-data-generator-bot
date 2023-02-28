@@ -18,10 +18,8 @@ import static dev.baxtigul.java_telegram_bots.config.ThreadSafeBeansContainer.*;
 
 public class GenerateDataMessageProcessor implements Processor<GenerateDataState,FakerApplicationGenerateRequest> {
     private final TelegramBot bot = TelegramBotConfiguration.get();
-
-
     @Override
-    public void process(Update update, GenerateDataState state,FakerApplicationGenerateRequest fakerApplicationGenerateRequest) {
+    public void process(Update update, GenerateDataState state,FakerApplicationGenerateRequest fakerApplicationGenerateRequest, Field field) {
         Message message = update.message();
         String text = message.text();
         Long chatID = message.chat().id();
@@ -45,14 +43,14 @@ public class GenerateDataMessageProcessor implements Processor<GenerateDataState
                 }
             }
         } else if (state.equals(GenerateDataState.FIELD_NAME)) {
-            field1.setFieldName(text);
+            field.setFieldName(text);
             bot.execute(SendMessageFactory.getSendMessageWithFieldTypes(chatID, "data.generate.select.field.type", language));
             userState.put(chatID, GenerateDataState.FIELD_TYPE);
         } else if (state.equals(GenerateDataState.MIN_VALUE)) {
             if (!siValueDigit(text)) {
                 bot.execute(new DeleteMessage(chatID, message.messageId()));
             } else {
-                field1.setMin(Integer.parseInt(text));
+                field.setMin(Integer.parseInt(text));
                 // TODO localize
                 bot.execute(new SendMessage(chatID, "Maximum value: "));
                 userState.put(chatID, GenerateDataState.MAX_VALUE);
@@ -61,8 +59,8 @@ public class GenerateDataMessageProcessor implements Processor<GenerateDataState
             if (!siValueDigit(text)) {
                 bot.execute(new DeleteMessage(chatID, message.messageId()));
             } else {
-                field1.setMax(Integer.parseInt(text));
-                fakerApplicationGenerateRequest.getFields().add(new Field(field1.getFieldName(),field1.getFieldType(),field1.getMin(),field1.getMax()));
+                field.setMax(Integer.parseInt(text));
+                fakerApplicationGenerateRequest.getFields().add(new Field(field.getFieldName(),field.getFieldType(),field.getMin(),field.getMax()));
                 // TODO localize
                 bot.execute(SendMessageFactory.getSendMessageWithAddStopFieldKeyboard(chatID, "data.generate.select.continue.stop", language));
                 userState.put(chatID, GenerateDataState.CONFIRM_ADDING_FIELDS);

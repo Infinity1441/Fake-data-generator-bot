@@ -1,5 +1,6 @@
 package dev.baxtigul.java_telegram_bots.processors.message;
 
+import com.github.javafaker.domain.Field;
 import com.github.javafaker.service.FakerApplicationGenerateRequest;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Message;
@@ -20,7 +21,7 @@ public class DefaultMessageProcessor implements Processor<DefaultState,FakerAppl
     private final TelegramBot bot = TelegramBotConfiguration.get();
 
     @Override
-    public void process(Update update, DefaultState state, FakerApplicationGenerateRequest fakerApplicationGenerateRequest) {
+    public void process(Update update, DefaultState state, FakerApplicationGenerateRequest fakerApplicationGenerateRequest, Field field) {
         Message message = update.message();
         User from = message.from();
         String text = message.text();

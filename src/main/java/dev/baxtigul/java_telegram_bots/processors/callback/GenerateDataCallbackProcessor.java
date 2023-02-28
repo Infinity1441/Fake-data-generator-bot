@@ -14,6 +14,7 @@ import com.pengrad.telegrambot.request.SendDocument;
 import com.pengrad.telegrambot.request.SendMessage;
 import dev.baxtigul.java_telegram_bots.config.TelegramBotConfiguration;
 import dev.baxtigul.java_telegram_bots.processors.Processor;
+import dev.baxtigul.java_telegram_bots.state.DefaultState;
 import dev.baxtigul.java_telegram_bots.state.GenerateDataState;
 import dev.baxtigul.java_telegram_bots.utils.MessageSourceUtils;
 import dev.baxtigul.java_telegram_bots.utils.factory.AnswerCallbackQueryFactory;
@@ -28,7 +29,7 @@ public class GenerateDataCallbackProcessor implements Processor<GenerateDataStat
     private final TelegramBot bot = TelegramBotConfiguration.get();
 
     @Override
-    public void process(Update update, GenerateDataState state,FakerApplicationGenerateRequest fakerApplicationGenerateRequest) {
+    public void process(Update update, GenerateDataState state,FakerApplicationGenerateRequest fakerApplicationGenerateRequest, Field field) {
         CallbackQuery callbackQuery = update.callbackQuery();
         Message message = callbackQuery.message();
         String callbackData = callbackQuery.data();
@@ -52,16 +53,16 @@ public class GenerateDataCallbackProcessor implements Processor<GenerateDataStat
             }
         } else if (state.equals(GenerateDataState.FIELD_TYPE)) {
             FieldType fieldType = FieldType.values()[Integer.parseInt(callbackData) - 1];
-            field1.setFieldType(fieldType);
+            field.setFieldType(fieldType);
             bot.execute(new DeleteMessage(chatID, message.messageId()));
 
             if (BLACK_LIST.contains(fieldType)) {
                 bot.execute(new SendMessage(chatID,getLocalizedMessage("minimum.value",language)));
                 userState.put(chatID, GenerateDataState.MIN_VALUE);
             } else {
-                field1.setMin(0);
-                field1.setMax(0);
-                fakerApplicationGenerateRequest.getFields().add(new Field(field1.getFieldName(), field1.getFieldType(), field1.getMin(), field1.getMax()));
+                field.setMin(0);
+                field.setMax(0);
+                fakerApplicationGenerateRequest.getFields().add(new Field(field.getFieldName(), field.getFieldType(), field.getMin(), field.getMax()));
                 bot.execute(SendMessageFactory.getSendMessageWithAddStopFieldKeyboard(chatID, "data.generate.select.continue.stop", language));
                 userState.put(chatID, GenerateDataState.CONFIRM_ADDING_FIELDS);
             }
@@ -74,6 +75,8 @@ public class GenerateDataCallbackProcessor implements Processor<GenerateDataStat
                 String filePath = fakerApplicationService.get().processRequest(fakerApplicationGenerateRequest);
                 Path path = Path.of(filePath);
                 File file = new File(path.toString());
+
+                userState.put(chatID, DefaultState.MAIN_STATE);
                 bot.execute(new SendDocument(chatID, file));
             }
         }

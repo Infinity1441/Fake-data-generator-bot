@@ -25,8 +25,8 @@ public class ThreadSafeBeansContainer {
     public static final ConcurrentHashMap<Long, State> userState = new ConcurrentHashMap<>();
     public static final ConcurrentHashMap<Object, Dictionary<String, Object>> collected = new ConcurrentHashMap<>();
     public static final ThreadLocal<FakerApplicationGenerateRequest> fakerApplicationGenerateRequest = ThreadLocal.withInitial(FakerApplicationGenerateRequest::new);
-    private static final ThreadLocal<Field> field = ThreadLocal.withInitial(Field::new);
-    public static final Field field1 = field.get();
+    public static final ThreadLocal<Field> field = ThreadLocal.withInitial(Field::new);
+//    public static final Field field1 = field.get();
 
     public static final ThreadLocal<FakerApplicationService> fakerApplicationService = ThreadLocal.withInitial(FakerApplicationService::new);
 
