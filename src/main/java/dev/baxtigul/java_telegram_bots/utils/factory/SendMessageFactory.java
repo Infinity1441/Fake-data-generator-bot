@@ -3,6 +3,7 @@ package dev.baxtigul.java_telegram_bots.utils.factory;
 import com.github.javafaker.domain.FieldType;
 import com.pengrad.telegrambot.request.EditMessageText;
 import com.pengrad.telegrambot.request.SendMessage;
+import org.apache.commons.lang3.StringUtils;
 
 import static dev.baxtigul.java_telegram_bots.utils.MessageSourceUtils.getLocalizedMessage;
 
@@ -31,9 +32,7 @@ public class SendMessageFactory {
         message.append("\n");
         int i = 1;
         for (FieldType value : FieldType.values()) {
-            message.append("%2d.%-20s".formatted(i, value));
-            if (i % 2 == 0)
-                message.append("\n");
+            message.append("%2d. %-20s".formatted(i, value)).append("\n");
             i++;
         }
         SendMessage sendMessage = new SendMessage(chatID, String.valueOf(message));

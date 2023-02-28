@@ -4,13 +4,10 @@ import dev.baxtigul.java_telegram_bots.domains.UserDomain;
 import dev.baxtigul.java_telegram_bots.dto.Response;
 import dev.baxtigul.java_telegram_bots.state.DefaultState;
 import dev.baxtigul.java_telegram_bots.utils.factory.SendMessageFactory;
-
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-
 import static dev.baxtigul.java_telegram_bots.config.ThreadSafeBeansContainer.userService;
 import static dev.baxtigul.java_telegram_bots.config.ThreadSafeBeansContainer.userState;
-
 
 public class InitializerConfiguration {
 
