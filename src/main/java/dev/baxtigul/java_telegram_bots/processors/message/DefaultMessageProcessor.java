@@ -30,7 +30,7 @@ public class DefaultMessageProcessor implements Processor<DefaultState,FakerAppl
             bot.execute(new DeleteMessage(chatID, message.messageId()));
         } else if ( state.equals(DefaultState.MAIN_STATE) ) {
             if ( text.equals(getLocalizedMessage("main.menu.generate.data", language)) ) {
-                bot.execute(new SendMessage(chatID, "Enter file Name"));
+                bot.execute(new SendMessage(chatID, getLocalizedMessage("data.generate.enter.file.name",language)));
                 userState.put(chatID, GenerateDataState.FILE_NAME);
             } else {
                 bot.execute(SendMessageFactory.sendMessageWithMainMenu(chatID, "Feel free to use a bot\uD83D\uDE07", from.languageCode()));

@@ -19,15 +19,12 @@ import dev.baxtigul.java_telegram_bots.utils.MessageSourceUtils;
 import dev.baxtigul.java_telegram_bots.utils.factory.AnswerCallbackQueryFactory;
 import dev.baxtigul.java_telegram_bots.utils.factory.SendMessageFactory;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import static com.github.javafaker.service.FakerApplicationService.BLACK_LIST;
 import static dev.baxtigul.java_telegram_bots.config.ThreadSafeBeansContainer.*;
 import static dev.baxtigul.java_telegram_bots.utils.MessageSourceUtils.getLocalizedMessage;
 
-public class GenerateDataCallbackProcessor implements Processor<GenerateDataState,FakerApplicationGenerateRequest> {
+public class GenerateDataCallbackProcessor implements Processor<GenerateDataState, FakerApplicationGenerateRequest> {
     private final TelegramBot bot = TelegramBotConfiguration.get();
 
     @Override
@@ -46,21 +43,20 @@ public class GenerateDataCallbackProcessor implements Processor<GenerateDataStat
                 bot.execute(new SendMessage(chatID, getLocalizedMessage("data.generate.enter.row.count", language)));
                 userState.put(chatID, GenerateDataState.ROW_COUNT);
             } else if (callbackData.equals("csv")) {
-                // TODO: 05/02/23 localize here
-                bot.execute(AnswerCallbackQueryFactory.answerCallbackQuery(callbackQuery.id(), "Sorry This CSV Type not supported yet"));
+                bot.execute(AnswerCallbackQueryFactory.answerCallbackQuery(callbackQuery.id(), getLocalizedMessage("csv.type.not.supported",language)));
             } else {
-                // TODO: 05/02/23 localize here
-                bot.execute(AnswerCallbackQueryFactory.answerCallbackQuery(callbackQuery.id(), "Sorry This SQL Type not supported yet"));
+                fakerApplicationGenerateRequest.setFileType(FileType.SQL);
+                bot.execute(new DeleteMessage(chatID, message.messageId()));
+                bot.execute(new SendMessage(chatID, getLocalizedMessage("data.generate.enter.row.count", language)));
+                userState.put(chatID, GenerateDataState.ROW_COUNT);
             }
         } else if (state.equals(GenerateDataState.FIELD_TYPE)) {
             FieldType fieldType = FieldType.values()[Integer.parseInt(callbackData) - 1];
             field1.setFieldType(fieldType);
-
             bot.execute(new DeleteMessage(chatID, message.messageId()));
 
             if (BLACK_LIST.contains(fieldType)) {
-                // TODO localize 06/02/2023
-                bot.execute(new SendMessage(chatID, "Minimum value:"));
+                bot.execute(new SendMessage(chatID,getLocalizedMessage("minimum.value",language)));
                 userState.put(chatID, GenerateDataState.MIN_VALUE);
             } else {
                 field1.setMin(0);
@@ -75,20 +71,11 @@ public class GenerateDataCallbackProcessor implements Processor<GenerateDataStat
                 bot.execute(new SendMessage(chatID, MessageSourceUtils.getLocalizedMessage("data.generate.enter.field.name", language)));
                 userState.put(chatID, GenerateDataState.FIELD_NAME);
             } else {
-                String result = fakerApplicationService.get().processRequest(fakerApplicationGenerateRequest);
-                String fileName = fakerApplicationGenerateRequest.getFileName() + "." + fakerApplicationGenerateRequest.getFileType().toString().toLowerCase();
-                Path path = Path.of(fileName);
-                try {
-                    if (Files.notExists(path))
-                        Files.createFile(path);
-                    Files.writeString(path, result, StandardOpenOption.TRUNCATE_EXISTING);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                String filePath = fakerApplicationService.get().processRequest(fakerApplicationGenerateRequest);
+                Path path = Path.of(filePath);
                 File file = new File(path.toString());
                 bot.execute(new SendDocument(chatID, file));
             }
         }
-
     }
 }

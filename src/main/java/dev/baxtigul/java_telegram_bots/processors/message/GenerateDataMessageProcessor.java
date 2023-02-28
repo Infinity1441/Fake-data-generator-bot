@@ -36,7 +36,7 @@ public class GenerateDataMessageProcessor implements Processor<GenerateDataState
                 bot.execute(new DeleteMessage(chatID, message.messageId()));
             } else {
                 int rowCount = Integer.parseInt(text);
-                if (rowCount > 20_000) {
+                if (rowCount > 50_000) {
                     bot.execute(new SendMessage(chatID, MessageSourceUtils.getLocalizedMessage("data.generate.too.many.rows", language)));
                 } else {
                     fakerApplicationGenerateRequest.setCount(rowCount);

@@ -2,11 +2,9 @@ package dev.baxtigul.java_telegram_bots.handlers;
 
 import com.github.javafaker.service.FakerApplicationGenerateRequest;
 import com.pengrad.telegrambot.model.Update;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-
 import static dev.baxtigul.java_telegram_bots.config.ThreadSafeBeansContainer.*;
 
 public class UpdateHandler {
